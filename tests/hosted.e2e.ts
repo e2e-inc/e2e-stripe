@@ -11,14 +11,14 @@ const FILL_PAYMENT_FORM =
 describe("hosted checkout", { tags: ["hosted"], skip, retries: 2, timeout: 180_000 }, () => {
   test("a valid card pays on Stripe's page and Stripe records it", async ({ app, agent, screen, browser, stripe }) => {
     await app.open("/");
-    await screen.getByRole("button", "Pay on Stripe").click();
+    await screen.getByRole("button", "pay on Stripe").click();
     await expect(browser).toHaveURL(STRIPE_PAGE, { timeout: 15_000 });
 
     await agent.act(FILL_PAYMENT_FORM, { params: { ...CUSTOMER, number: CARDS.visa } });
     await agent.assert("the card number field shows 4242 4242 4242 4242", { vision: true });
 
     await agent.act("click the Pay button");
-    await expect(screen.getByTestId("payment-status")).toHaveText("Paid", { timeout: 30_000 });
+    await expect(screen.getByTestId("payment-status")).toHaveText("paid", { timeout: 30_000 });
 
     const sessionId = new URL(await browser.url()).searchParams.get("session_id") ?? "";
     expect(await stripe.checkout.sessions.retrieve(sessionId)).toMatchObject({
@@ -36,7 +36,7 @@ describe("hosted checkout", { tags: ["hosted"], skip, retries: 2, timeout: 180_0
     },
     async ({ app, agent, screen, browser, stripe }) => {
       await app.open("/");
-      await screen.getByRole("button", "Pay on Stripe").click();
+      await screen.getByRole("button", "pay on Stripe").click();
       await expect(browser).toHaveURL(STRIPE_PAGE, { timeout: 15_000 });
       const sessionId = sessionIdFromStripeUrl(await browser.url());
 
@@ -61,7 +61,7 @@ describe("hosted checkout", { tags: ["hosted"], skip, retries: 2, timeout: 180_0
     },
     async ({ app, agent, screen, browser, stripe }) => {
       await app.open("/");
-      await screen.getByRole("button", "Pay on Stripe").click();
+      await screen.getByRole("button", "pay on Stripe").click();
       await expect(browser).toHaveURL(STRIPE_PAGE, { timeout: 15_000 });
 
       await agent.act(FILL_PAYMENT_FORM, { params: { ...CUSTOMER, number: CARDS.threeDSecure } });
@@ -71,7 +71,7 @@ describe("hosted checkout", { tags: ["hosted"], skip, retries: 2, timeout: 180_0
       await agent.waitFor("a 3D Secure authentication challenge is showing", { vision: true });
 
       await agent.act("complete the authentication");
-      await expect(screen.getByTestId("payment-status")).toHaveText("Paid", { timeout: 30_000 });
+      await expect(screen.getByTestId("payment-status")).toHaveText("paid", { timeout: 30_000 });
 
       const sessionId = new URL(await browser.url()).searchParams.get("session_id") ?? "";
       expect(await stripe.checkout.sessions.retrieve(sessionId)).toMatchObject({
@@ -89,7 +89,7 @@ describe("hosted checkout", { tags: ["hosted"], skip, retries: 2, timeout: 180_0
     },
     async ({ app, agent, screen, browser, stripe }) => {
       await app.open("/");
-      await screen.getByRole("button", "Pay on Stripe").click();
+      await screen.getByRole("button", "pay on Stripe").click();
       await expect(browser).toHaveURL(STRIPE_PAGE, { timeout: 15_000 });
       const sessionId = sessionIdFromStripeUrl(await browser.url());
 
@@ -117,14 +117,14 @@ describe("hosted checkout", { tags: ["hosted"], skip, retries: 2, timeout: 180_0
     stripe,
   }) => {
     await app.open("/");
-    await screen.getByRole("button", "Pay on Stripe").click();
+    await screen.getByRole("button", "pay on Stripe").click();
     await expect(browser).toHaveURL(STRIPE_PAGE, { timeout: 15_000 });
     const sessionId = sessionIdFromStripeUrl(await browser.url());
 
     // Stripe's back link goes to cancel_url; the browser's back button would skip it.
     await agent.act("leave Stripe's page with the back link at the top of the page");
     await expect(browser).toHaveURL("/");
-    await expect(screen.getByRole("button", "Pay on Stripe")).toBeVisible();
+    await expect(screen.getByRole("button", "pay on Stripe")).toBeVisible();
     expect(await stripe.checkout.sessions.retrieve(sessionId)).toMatchObject({
       status: "open",
       payment_status: "unpaid",

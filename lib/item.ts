@@ -1,5 +1,5 @@
 // Amounts are in cents, as Stripe expects them.
-export const ITEM = { name: "e2e T-shirt", amount: 2000 };
+export const ITEM = { name: "e2e t-shirt", amount: 2000 };
 
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 
